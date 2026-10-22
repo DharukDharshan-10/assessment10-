@@ -1,5 +1,5 @@
-# generated/Dockerfile
 FROM nginx:alpine
 COPY index.html /usr/share/nginx/html/index.html
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# ⚠️ Intentionally broken command to trigger container crash loop
+CMD ["nginx", "-g", "invalid_config_directive_to_fail_rollout;"]
