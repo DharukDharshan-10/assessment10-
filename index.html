@@ -1,0 +1,96 @@
+<!-- generated/index.html -->
+<!DOCTYPE html>
+<html lang="pa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ਰੋਡ ਹੈਜ਼ਰਡ ਰਿਪੋਰਟਿੰਗ ਪੋਰਟਲ</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; background-color: #f4f6f9; }
+        header { background: #1e3a8a; color: white; padding: 20px; text-align: center; border-radius: 8px; margin-bottom: 20px; }
+        .summary-cards { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+        .card { flex: 1; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); text-align: center; min-width: 150px; }
+        .card h3 { margin: 0 0 10px 0; color: #4b5563; }
+        .card p { font-size: 24px; font-weight: bold; margin: 0; color: #1e3a8a; }
+        .filters { margin-bottom: 20px; background: white; padding: 15px; border-radius: 8px; display: flex; align-items: center; gap: 10px; }
+        select { padding: 8px 12px; border-radius: 5px; border: 1px solid #cbd5e1; font-size: 16px; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background-color: #f8fafc; color: #334155; }
+        .status { padding: 5px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+        .status-resolved { background: #d1fae5; color: #065f46; }
+        .status-in-progress { background: #fef3c7; color: #92400e; }
+        .status-reported { background: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Municipal Road Hazard Reporting Portal</h1>
+        <p>Real-time tracking of public safety infrastructure updates</p>
+    </header>
+
+    <!-- Complaint Status Summary -->
+    <div class="summary-cards">
+        <div class="card"><h3>Total Complaints</h3><p id="total-count">5</p></div>
+        <div class="card"><h3>Reported</h3><p id="reported-count" style="color: #991b1b;">2</p></div>
+        <div class="card"><h3>In Progress</h3><p id="progress-count" style="color: #92400e;">2</p></div>
+        <div class="card"><h3>Resolved</h3><p id="resolved-count" style="color: #065f46;">1</p></div>
+    </div>
+
+    <!-- Category Filter -->
+    <div class="filters">
+        <label for="categoryFilter"><strong>Filter by Category:</strong></label>
+        <select id="categoryFilter" onchange="filterComplaints()">
+            <option value="all">All Categories</option>
+            <option value="pothole">Potholes</option>
+            <option value="damaged streetlight">Damaged Streetlights</option>
+            <option value="waterlogging">Waterlogging</option>
+        </select>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Complaint ID</th>
+                <th>Category</th>
+                <th>Affected Location</th>
+                <th>Report Date</th>
+                <th>Resolution Status</th>
+            </tr>
+        </thead>
+        <tbody id="complaintTable">
+            <tr data-category="pothole">
+                <td>#HZ-101</td><td>Pothole</td><td>Main Commercial Street, Ward 4</td><td>2026-10-15</td>
+                <td><span class="status status-reported">Reported</span></td>
+            </tr>
+            <tr data-category="damaged streetlight">
+                <td>#HZ-102</td><td>Damaged Streetlight</td><td>Nehru Bypass Intersection</td><td>2026-10-18</td>
+                <td><span class="status status-in-progress">In Progress</span></td>
+            </tr>
+            <tr data-category="waterlogging">
+                <td>#HZ-103</td><td>Waterlogging</td><td>Low-lying Residential Colony, Block C</td><td>2026-10-20</td>
+                <td><span class="status status-reported">Reported</span></td>
+            </tr>
+            <tr data-category="pothole">
+                <td>#HZ-104</td><td>Pothole</td><td>Industrial Area Access Road</td><td>2026-10-12</td>
+                <td><span class="status status-resolved">Resolved</span></td>
+            </tr>
+            <tr data-category="damaged streetlight">
+                <td>#HZ-105</td><td>Damaged Streetlight</td><td>Subhash Nagar Public Park Lane</td><td>2026-10-19</td>
+                <td><span class="status status-in-progress">In Progress</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        function filterComplaints() {
+            const filterValue = document.getElementById('categoryFilter').value;
+            const rows = document.querySelectorAll('#complaintTable tr');
+            rows.forEach(row => {
+                const category = row.getAttribute('data-category');
+                row.style.display = (filterValue === 'all' || category === filterValue) ? '' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>
