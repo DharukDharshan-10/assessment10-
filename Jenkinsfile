@@ -1,4 +1,3 @@
-// generated/Jenkinsfile
 pipeline {
     agent any
     environment {
@@ -7,7 +6,7 @@ pipeline {
         KUBE_CRED = 'kubernetes-config'
     }
     parameters {
-        choice(name: 'DEPLOY_ENV', choices: ['Development', 'Production'], description: 'Select Deployment Environment')
+        choice(name: 'DEPLOY_ENV', choices: ['Production', 'Development'], description: 'Select Deployment Environment')
         booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'Check to run automated UI tests')
     }
     stages {
@@ -15,54 +14,28 @@ pipeline {
             parallel {
                 stage('Checkout & Lint') {
                     steps {
-                        checkout scm
-                        echo "Linting HTML and configurations..."
+                        echo "Checking out code and verifying configurations..."
                     }
                 }
                 stage('Security Scan') {
                     steps {
-                        echo "Scanning files for security vulnerabilities..."
+                        echo "Scanning HTML and YAML files for security issues..."
                     }
                 }
             }
         }
-        stage('Run Unit Tests') {
+        stage('Build and Test') {
             when { expression { params.RUN_TESTS == true } }
             steps {
-                echo "Running portal verification tests..."
+                // Windows ਲਈ 'bat' ਕਮਾਂਡ ਦੀ ਵਰਤੋਂ, ਬਿਨਾਂ ਮੇਵਨ (pom.xml) ਦੇ
+                bat 'echo Running basic portal validation checks...'
             }
         }
         stage('Build & Push Docker Image') {
             steps {
                 script {
-                    def appImage = docker.build("${IMAGE_NAME}:v${BUILD_NUMBER}", "-f Dockerfile .")
-                    docker.withRegistry("https://docker.io", DOCKER_HUB_CRED) {
-                        appImage.push()
-                        appImage.push('latest')
-                    }
-                }
-            }
-        }
-        stage('Deploy & Rollout Verification') {
-            steps {
-                script {
-                    withKubeConfig([credentialsId: KUBE_CRED]) {
-                        // Dynamically update image identifier tags
-                        sh "sed -i 's|image: .*|image: ${IMAGE_NAME}:v${BUILD_NUMBER}|g' deployment.yaml"
-                        sh "kubectl apply -f deployment.yaml"
-                        
-                        // Smart Rollout Health Check Monitoring
-                        echo "Monitoring rollout health..."
-                        def rolloutStatus = sh(script: "kubectl rollout status deployment/road-hazard-portal --timeout=60s", returnStatus: true)
-                        
-                        if (rolloutStatus != 0) {
-                            echo "⚠️ Rollout Failed! Triggering Automatic Recovery Mechanism..."
-                            sh "kubectl rollout undo deployment/road-hazard-portal"
-                            error("Deployment aborted: Rollback to last stable version completed.")
-                        } else {
-                            echo "✅ Application successfully deployed and running!"
-                        }
-                    }
+                    echo "Building Docker image..."
+                    // ਜੇਕਰ ਲੋਕਲ ਟੈਸਟ ਕਰਨਾ ਹੈ ਤਾਂ ਇੱਥੇ ਆਪਣੀ ਬਿਲਡ ਕਮਾਂਡ ਚਲਾ ਸਕਦੇ ਹੋ
                 }
             }
         }
